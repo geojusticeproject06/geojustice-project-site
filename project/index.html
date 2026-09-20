@@ -55,7 +55,8 @@
     border-bottom:1px solid var(--line);
   }
   .nav-brand{ font-size:14px; font-weight:600; display:flex; align-items:center; gap:10px; }
-  .nav-mark{ width:9px; height:9px; background:var(--amber); display:inline-block; }
+  .nav-mark{ width:28px; height:28px; display:inline-block; flex-shrink:0; }
+  .foot-mark{ width:22px; height:22px; display:inline-block; vertical-align:middle; margin-right:8px; }
   .nav-links{ display:flex; gap:26px; align-items:center; }
   .nav-links a{ font-size:14px; text-decoration:none; color:var(--ink-2); border-bottom:1px solid transparent; padding-bottom:2px; }
   .nav-links a:hover{ border-color:var(--amber); }
@@ -225,7 +226,7 @@
 <body>
 
 <nav>
-  <div class="nav-brand"><span class="nav-mark"></span>THE GEOJUSTICE PROJECT</div>
+  <div class="nav-brand"><svg class="nav-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="1" y="1" width="38" height="38" rx="6" fill="#0E1720" stroke="#D6A419" stroke-width="1.5"/><rect x="9" y="23" width="4.5" height="9" fill="#D6A419"/><rect x="16" y="17" width="4.5" height="15" fill="#D6A419"/><rect x="23" y="9" width="4.5" height="23" fill="#B98910"/><rect x="30" y="19" width="4.5" height="13" fill="#D6A419"/></svg>THE GEOJUSTICE PROJECT</div>
   <div class="nav-links">
     <a href="#platform">Platform</a>
     <a href="#services">Advisory</a>
@@ -460,7 +461,7 @@
 
 <footer>
   <div class="wrap foot-grid">
-    <div class="foot-legal">© 2026 The GeoJustice Project. Software Equity Matters.</div>
+    <div class="foot-legal"><svg class="foot-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="1" y="1" width="38" height="38" rx="6" fill="#0E1720" stroke="#D6A419" stroke-width="1.5"/><rect x="9" y="23" width="4.5" height="9" fill="#D6A419"/><rect x="16" y="17" width="4.5" height="15" fill="#D6A419"/><rect x="23" y="9" width="4.5" height="23" fill="#B98910"/><rect x="30" y="19" width="4.5" height="13" fill="#D6A419"/></svg>© 2026 The GeoJustice Project. Software Equity Matters.</div>
     <div class="foot-links">
       <a href="#platform">Platform</a>
       <a href="#roadmap">Roadmap</a>
