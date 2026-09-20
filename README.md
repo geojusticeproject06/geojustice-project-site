@@ -3,7 +3,7 @@
 Two linked single-file sites, repositioned per the latest brand decision:
 
 - **The GeoJustice Project** (`project/index.html`) — the for-profit software
-  development company. New slogan: **"Equity Software Matters."** Leads with
+  development company. New slogan: **"Software Equity Matters."** Leads with
   the GeoJustice Decision Platform (product-first), with advisory/consulting
   services positioned as secondary — work that funds the roadmap and gets
   agencies platform-ready, not the core identity.

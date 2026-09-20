@@ -40,7 +40,9 @@
     background:rgba(246,239,221,0.92); backdrop-filter:blur(8px);
     border-bottom:1px solid var(--line);
   }
-  .brand{ font-size:18px; font-weight:600; }
+  .brand{ font-size:18px; font-weight:600; display:flex; align-items:center; gap:10px; }
+  .brand-mark{ height:36px; width:36px; object-fit:contain; }
+  .foot-mark{ height:28px; width:28px; object-fit:contain; vertical-align:middle; margin-right:8px; }
   .brand em{ font-style:normal; color:var(--red); }
   .nav-links{ display:flex; gap:26px; align-items:center; }
   .nav-links a{ font-size:14.5px; text-decoration:none; color:var(--ink-soft); border-bottom:1px solid transparent; padding-bottom:2px; }
@@ -146,7 +148,7 @@
 <body>
 
 <nav>
-  <div class="brand">The GeoJustice <em>Institute</em></div>
+  <div class="brand"><img src="assets/geojustice-logo.png" alt="The GeoJustice Project logo" class="brand-mark">The GeoJustice <em>Institute</em></div>
   <div class="nav-links">
     <a href="#programs">Programs</a>
     <a href="#impact">Impact</a>
@@ -285,7 +287,7 @@
 <section>
   <div class="wrap">
     <div class="affiliate">
-      <p><strong>The GeoJustice Project</strong> is our for-profit affiliate — they build the GeoJustice Decision Platform under the motto "Equity Software Matters." We teach the people who will one day use tools like it.</p>
+      <p><strong>The GeoJustice Project</strong> is our for-profit affiliate — they build the GeoJustice Decision Platform under the motto "Software Equity Matters." We teach the people who will one day use tools like it.</p>
       <a href="../project/index.html" class="btn btn-ghost">Visit The Project →</a>
     </div>
   </div>
@@ -331,7 +333,7 @@
 
 <footer>
   <div class="wrap foot-grid">
-    <div class="foot-legal">© 2026 The GeoJustice Institute. Mapping Equity Matters.</div>
+    <div class="foot-legal"><img src="assets/geojustice-logo.png" alt="" class="foot-mark">© 2026 The GeoJustice Institute. Mapping Equity Matters.</div>
     <div class="foot-links">
       <a href="#programs">Programs</a>
       <a href="#involve">Get involved</a>
