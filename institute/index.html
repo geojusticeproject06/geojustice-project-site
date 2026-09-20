@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The GeoJustice Institute — Mapping Equity Matters</title>
+<meta name="description" content="The GeoJustice Institute teaches GIS to youth and communities in Atlanta and beyond — the nonprofit education affiliate of The GeoJustice Project.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6EFDD;
+    --paper-2:#EEE3C8;
+    --ink:#17140F;
+    --ink-soft:#4A4335;
+    --red:#B23A2E;
+    --green:#1E5631;
+    --gold:#B9842A;
+    --line:#DCCFAE;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Public Sans',sans-serif; line-height:1.65; font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.brand{ font-family:'Spectral',serif; }
+  a{ color:inherit; }
+  ::selection{ background:var(--gold); color:var(--paper); }
+  :focus-visible{ outline:2px solid var(--green); outline-offset:3px; }
+  .wrap{ max-width:1140px; margin:0 auto; padding:0 clamp(20px,4vw,56px); }
+
+  /* ---------- nav ---------- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px clamp(20px,4vw,56px);
+    background:rgba(246,239,221,0.92); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{ font-size:18px; font-weight:600; }
+  .brand em{ font-style:normal; color:var(--red); }
+  .nav-links{ display:flex; gap:26px; align-items:center; }
+  .nav-links a{ font-size:14.5px; text-decoration:none; color:var(--ink-soft); border-bottom:1px solid transparent; padding-bottom:2px; }
+  .nav-links a:hover{ border-color:var(--gold); }
+  .nav-cta{ background:var(--green); color:var(--paper)!important; padding:9px 18px; }
+  .nav-cta:hover{ background:#173F24; }
+
+  /* ---------- hero ---------- */
+  header.hero{ position:relative; padding:80px 0 60px; overflow:hidden; }
+  .hero-grid{ display:grid; grid-template-columns:1.1fr 0.9fr; gap:48px; align-items:center; }
+  .eyebrow{ font-size:13.5px; letter-spacing:0.01em; color:var(--red); font-weight:600; margin-bottom:16px; }
+  h1.headline{
+    font-size:clamp(32px,4.4vw,52px); line-height:1.14; font-weight:600;
+    margin:0 0 22px;
+  }
+  .sub{ font-size:17px; color:var(--ink-soft); max-width:52ch; margin:0 0 30px; }
+  .hero-ctas{ display:flex; gap:14px; flex-wrap:wrap; }
+  .btn{ font-family:'Public Sans',sans-serif; font-size:14.5px; font-weight:600; padding:13px 22px; text-decoration:none; display:inline-block; border:1px solid var(--ink); }
+  .btn-solid{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .btn-solid:hover{ background:#000; }
+  .btn-ghost{ background:transparent; color:var(--ink); }
+  .btn-ghost:hover{ background:var(--paper-2); }
+
+  /* ---------- path motif svg ---------- */
+  .motif-wrap{ position:relative; }
+  .motif-wrap svg{ width:100%; height:auto; display:block; }
+
+  /* ---------- sections ---------- */
+  section{ padding:72px 0; border-top:1px solid var(--line); }
+  .section-head{ max-width:62ch; margin-bottom:40px; }
+  .eyebrow-sm{ font-size:12.5px; color:var(--green); font-weight:600; margin-bottom:10px; letter-spacing:0.01em; }
+  h2{ font-size:clamp(24px,2.6vw,32px); margin:0 0 12px; font-weight:600; }
+  .section-dek{ color:var(--ink-soft); font-size:15.5px; }
+
+  /* ---------- flagship program ---------- */
+  .flagship{ display:grid; grid-template-columns:0.85fr 1.15fr; gap:0; border:1px solid var(--line); }
+  .flagship-visual{ background:var(--green); position:relative; min-height:280px; }
+  .flagship-visual svg{ position:absolute; inset:0; width:100%; height:100%; }
+  .flagship-body{ padding:34px; background:var(--paper-2); }
+  .flagship-tag{ font-size:12px; color:var(--red); font-weight:600; margin-bottom:12px; }
+  .flagship-body h3{ font-size:22px; margin:0 0 12px; }
+  .flagship-body p{ font-size:14.5px; color:var(--ink-soft); margin:0 0 18px; }
+  .flagship-facts{ display:flex; gap:28px; flex-wrap:wrap; }
+  .flagship-fact b{ display:block; font-family:'Spectral',serif; font-size:20px; color:var(--green); }
+  .flagship-fact span{ font-size:12px; color:var(--ink-soft); }
+
+  /* ---------- programs grid ---------- */
+  .programs{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .program{ background:var(--paper); padding:24px; }
+  .program h3{ font-size:16.5px; margin:0 0 8px; font-weight:600; }
+  .program p{ font-size:13.5px; color:var(--ink-soft); margin:0; }
+
+  /* ---------- impact ---------- */
+  .impact{ display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line); }
+  .impact-item{ padding:26px 22px; border-right:1px solid var(--line); }
+  .impact-item:last-child{ border-right:none; }
+  .impact-num{ font-family:'Spectral',serif; font-size:30px; font-weight:600; color:var(--red); }
+  .impact-label{ font-size:12.5px; color:var(--ink-soft); margin-top:6px; }
+
+  /* ---------- get involved ---------- */
+  .involve{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .involve-card{ background:var(--paper); padding:28px; }
+  .involve-card .mark{ width:34px; height:34px; background:var(--gold); margin-bottom:16px; }
+  .involve-card h3{ font-size:16.5px; margin:0 0 8px; }
+  .involve-card p{ font-size:13.5px; color:var(--ink-soft); margin:0 0 16px; }
+  .involve-card a{ font-size:13.5px; font-weight:600; color:var(--green); text-decoration:none; border-bottom:1px solid var(--green); }
+
+  /* ---------- affiliate ---------- */
+  .affiliate{ border:1px solid var(--line); padding:26px; display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap; background:var(--paper-2); }
+  .affiliate p{ margin:0; font-size:14px; color:var(--ink-soft); max-width:56ch; }
+
+  /* ---------- contact ---------- */
+  .contact-grid{ display:grid; grid-template-columns:1fr 1fr; gap:56px; }
+  form{ display:flex; flex-direction:column; gap:14px; }
+  input,textarea,select{
+    font-family:'Public Sans',sans-serif; font-size:14.5px; padding:12px 14px;
+    border:1px solid var(--line); background:var(--paper); color:var(--ink);
+  }
+  textarea{ min-height:110px; resize:vertical; }
+  label.form-label{ font-size:12.5px; color:var(--ink-soft); margin-bottom:-8px; }
+  .ok-msg{ display:none; font-size:13.5px; color:var(--green); padding:10px 0; }
+
+  footer{ border-top:1px solid var(--line); padding:34px 0; }
+  .foot-grid{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+  .foot-links{ display:flex; gap:20px; font-size:13px; }
+  .foot-links a{ text-decoration:none; color:var(--ink-soft); }
+  .foot-links a:hover{ color:var(--ink); }
+  .foot-legal{ font-size:12px; color:var(--ink-soft); }
+
+  @media (max-width:860px){
+    .hero-grid{ grid-template-columns:1fr; }
+    .flagship{ grid-template-columns:1fr; }
+    .flagship-visual{ min-height:180px; }
+    .programs{ grid-template-columns:1fr; }
+    .impact{ grid-template-columns:1fr 1fr; }
+    .impact-item{ border-bottom:1px solid var(--line); }
+    .involve{ grid-template-columns:1fr; }
+    .contact-grid{ grid-template-columns:1fr; gap:36px; }
+  }
+  @media (prefers-reduced-motion:reduce){ *{ transition:none!important; animation:none!important; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">The GeoJustice <em>Institute</em></div>
+  <div class="nav-links">
+    <a href="#programs">Programs</a>
+    <a href="#impact">Impact</a>
+    <a href="#involve">Get involved</a>
+    <a href="#contact" class="nav-cta">Partner with us</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">NONPROFIT · GIS EDUCATION</div>
+      <h1 class="headline">We teach young people to read the map before someone else writes them out of it.</h1>
+      <p class="sub">The GeoJustice Institute brings GIS education to youth ages 12–24, communities, and organizations — so the people most affected by land decisions can read, question, and shape them. Mapping Equity Matters.</p>
+      <div class="hero-ctas">
+        <a href="#programs" class="btn btn-solid">See our programs</a>
+        <a href="#contact" class="btn btn-ghost">Partner or donate</a>
+      </div>
+    </div>
+    <div class="motif-wrap">
+      <svg viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="60" cy="330" r="5" fill="#B23A2E"/>
+        <circle cx="140" cy="260" r="4" fill="#1E5631"/>
+        <circle cx="120" cy="180" r="3.5" fill="#17140F"/>
+        <circle cx="210" cy="150" r="5" fill="#B9842A"/>
+        <circle cx="270" cy="90" r="4" fill="#1E5631"/>
+        <circle cx="340" cy="60" r="5.5" fill="#B23A2E"/>
+        <circle cx="300" cy="200" r="3.5" fill="#17140F"/>
+        <circle cx="360" cy="250" r="4" fill="#B9842A"/>
+        <path d="M60 330 L140 260 L120 180 L210 150 L270 90 L340 60" stroke="#17140F" stroke-width="1.4" stroke-dasharray="2 6" stroke-linecap="round"/>
+        <path d="M210 150 L300 200 L360 250" stroke="#17140F" stroke-width="1.4" stroke-dasharray="2 6" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<section id="programs">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow-sm">FLAGSHIP PROGRAM</div>
+      <h2>The Skyway Tech Program</h2>
+      <p class="section-dek">GIS education embedded inside a working recreation center — where students learn mapping tools on real neighborhood data, not a classroom exercise.</p>
+    </div>
+
+    <div class="flagship">
+      <div class="flagship-visual">
+        <svg viewBox="0 0 300 280" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+          <rect width="300" height="280" fill="#1E5631"/>
+          <g stroke="#F6EFDD" stroke-opacity="0.35" stroke-width="1">
+            <line x1="0" y1="70" x2="300" y2="70"/>
+            <line x1="0" y1="140" x2="300" y2="140"/>
+            <line x1="0" y1="210" x2="300" y2="210"/>
+            <line x1="75" y1="0" x2="75" y2="280"/>
+            <line x1="150" y1="0" x2="150" y2="280"/>
+            <line x1="225" y1="0" x2="225" y2="280"/>
+          </g>
+          <circle cx="150" cy="140" r="10" fill="#B9842A"/>
+          <circle cx="150" cy="140" r="26" fill="none" stroke="#B9842A" stroke-width="1.5"/>
+          <circle cx="150" cy="140" r="48" fill="none" stroke="#B9842A" stroke-width="1" stroke-opacity="0.6"/>
+        </svg>
+      </div>
+      <div class="flagship-body">
+        <div class="flagship-tag">SKYWAY RECREATION CENTER, ATLANTA</div>
+        <h3>Community mapping, taught where the community already gathers</h3>
+        <p>Students at the Skyway Recreation Center learn ArcGIS fundamentals through the PEARi Tech Program — mapping their own blocks, parks, and infrastructure gaps, then presenting findings back to the people who live there. It's the model we're building every other program on.</p>
+        <div class="flagship-facts">
+          <div class="flagship-fact"><b>12–24</b><span>Age range served</span></div>
+          <div class="flagship-fact"><b>Skyway</b><span>Host recreation center</span></div>
+          <div class="flagship-fact"><b>Real data</b><span>Students map their own neighborhoods</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="programs" style="margin-top:1px;">
+      <div class="program">
+        <h3>Community GIS workshops</h3>
+        <p>Short-form sessions for residents and community groups on reading maps, public data, and how land decisions actually get made.</p>
+      </div>
+      <div class="program">
+        <h3>School &amp; district partnerships</h3>
+        <p>GIS curriculum support for teachers who want mapping and spatial thinking in the classroom without building it from scratch.</p>
+      </div>
+      <div class="program">
+        <h3>Organization training</h3>
+        <p>GIS capacity-building for nonprofits and community organizations that need mapping skills in-house.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="impact">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow-sm">WHY IT MATTERS</div>
+      <h2>Land decisions get made with or without the people they affect.</h2>
+      <p class="section-dek">GIS is the language those decisions are written in. We teach it so more people are in the room able to speak it.</p>
+    </div>
+    <div class="impact">
+      <div class="impact-item"><div class="impact-num">12–24</div><div class="impact-label">Youth age range served</div></div>
+      <div class="impact-item"><div class="impact-num">1</div><div class="impact-label">Flagship site: Skyway Recreation Center</div></div>
+      <div class="impact-item"><div class="impact-num">501(c)(3)</div><div class="impact-label">Independent nonprofit status</div></div>
+      <div class="impact-item"><div class="impact-num">Atlanta</div><div class="impact-label">Home base, growing from here</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="involve">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow-sm">GET INVOLVED</div>
+      <h2>Three ways in.</h2>
+    </div>
+    <div class="involve">
+      <div class="involve-card">
+        <div class="mark"></div>
+        <h3>Donate</h3>
+        <p>Fund a seat in the Skyway Tech Program or support program expansion to a new site.</p>
+        <a href="#contact">Give →</a>
+      </div>
+      <div class="involve-card">
+        <div class="mark"></div>
+        <h3>Volunteer</h3>
+        <p>Teach a session, mentor a student project, or help run a community workshop.</p>
+        <a href="#contact">Sign up →</a>
+      </div>
+      <div class="involve-card">
+        <div class="mark"></div>
+        <h3>Partner</h3>
+        <p>Bring the program to your school, recreation center, or organization.</p>
+        <a href="#contact">Talk to us →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="affiliate">
+      <p><strong>The GeoJustice Project</strong> is our for-profit affiliate — they build the GeoJustice Decision Platform under the motto "Equity Software Matters." We teach the people who will one day use tools like it.</p>
+      <a href="../project/index.html" class="btn btn-ghost">Visit The Project →</a>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow-sm">CONTACT</div>
+      <h2>Partner, volunteer, or give.</h2>
+    </div>
+    <div class="contact-grid">
+      <div>
+        <p class="section-dek" style="margin-bottom:20px;">Tell us how you'd like to get involved and we'll follow up within two business days.</p>
+        <div id="ok" class="ok-msg">Thanks — message received. We'll reply within two business days.</div>
+        <form id="cform" name="contact" method="POST" data-netlify="true">
+          <input type="hidden" name="form-name" value="contact">
+          <label class="form-label">Name</label>
+          <input type="text" name="name" required>
+          <label class="form-label">Email</label>
+          <input type="email" name="email" required>
+          <label class="form-label">Organization (if any)</label>
+          <input type="text" name="org">
+          <label class="form-label">I'm interested in</label>
+          <select name="interest">
+            <option>Donating</option>
+            <option>Volunteering</option>
+            <option>Partnering my school/org</option>
+            <option>Something else</option>
+          </select>
+          <label class="form-label">Message</label>
+          <textarea name="message" required></textarea>
+          <button type="submit" class="btn btn-solid" style="align-self:flex-start;">Send</button>
+        </form>
+      </div>
+      <div style="border:1px solid var(--line); padding:24px; background:var(--paper-2);">
+        <h3 style="font-size:17px; margin:0 0 10px;">Where your support goes</h3>
+        <p style="font-size:14px; color:var(--ink-soft); margin:0;">Direct program costs: instructor time, ArcGIS licensing for students, field equipment, and transportation to community mapping sites. No layer of overhead between your gift and a student learning the software.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div class="foot-legal">© 2026 The GeoJustice Institute. Mapping Equity Matters.</div>
+    <div class="foot-links">
+      <a href="#programs">Programs</a>
+      <a href="#involve">Get involved</a>
+      <a href="../project/index.html">The Project</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('cform').addEventListener('submit', function(e){
+  if(location.hostname==='localhost' || location.protocol==='file:' || location.hostname.includes('claude')){
+    e.preventDefault();
+    document.getElementById('ok').style.display='block';
+    this.reset();
+  }
+});
+</script>
+</body>
+</html>

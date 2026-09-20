@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The GeoJustice Project — Equity Software Matters</title>
+<meta name="description" content="The GeoJustice Project builds the GeoJustice Decision Platform — ArcGIS-native, equity-weighted decision software for public land and parks agencies.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1720;
+    --ink-2:#16222E;
+    --paper:#F1F3F0;
+    --paper-2:#E7EAE5;
+    --amber:#D6A419;
+    --amber-deep:#B98910;
+    --teal:#2F6F5E;
+    --line:#C7D0CB;
+    --line-soft:#DDE3DE;
+    --grey:#5C6660;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Inter',sans-serif; line-height:1.6; font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.mono,.nav-brand,.btn,.stat-num,.readout{ font-family:'JetBrains Mono',monospace; }
+  a{ color:inherit; }
+  ::selection{ background:var(--amber); color:var(--ink); }
+  :focus-visible{ outline:2px solid var(--teal); outline-offset:3px; }
+
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 clamp(20px,4vw,56px); }
+
+  /* ---------- coordinate grid backdrop ---------- */
+  .grid-bg{
+    position:absolute; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size:56px 56px;
+    -webkit-mask-image:linear-gradient(to bottom, black, transparent 92%);
+    mask-image:linear-gradient(to bottom, black, transparent 92%);
+  }
+
+  /* ---------- nav ---------- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px clamp(20px,4vw,56px);
+    background:rgba(241,243,240,0.9); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-brand{ font-size:14px; font-weight:600; display:flex; align-items:center; gap:10px; }
+  .nav-mark{ width:9px; height:9px; background:var(--amber); display:inline-block; }
+  .nav-links{ display:flex; gap:26px; align-items:center; }
+  .nav-links a{ font-size:14px; text-decoration:none; color:var(--ink-2); border-bottom:1px solid transparent; padding-bottom:2px; }
+  .nav-links a:hover{ border-color:var(--amber); }
+  .nav-cta{ background:var(--ink); color:var(--paper)!important; padding:9px 16px; font-size:13px; border:1px solid var(--ink); }
+  .nav-cta:hover{ background:var(--ink-2); border-color:var(--ink-2); }
+
+  /* ---------- hero ---------- */
+  header.hero{ position:relative; padding:88px 0 64px; overflow:hidden; }
+  .hero-grid{ position:relative; z-index:1; display:grid; grid-template-columns:1.05fr 0.95fr; gap:56px; align-items:start; }
+  .eyebrow{ font-size:13px; color:var(--teal); font-weight:600; margin-bottom:18px; }
+  h1.headline{
+    font-size:clamp(34px,4.6vw,56px); line-height:1.06; font-weight:700; letter-spacing:-0.01em;
+    margin:0 0 22px;
+  }
+  .headline .accent{ color:var(--amber-deep); }
+  .sub{ font-size:17px; color:var(--grey); max-width:52ch; margin:0 0 28px; }
+  .hero-ctas{ display:flex; gap:14px; flex-wrap:wrap; }
+  .btn{ font-size:14px; font-weight:500; padding:12px 20px; border:1px solid var(--ink); text-decoration:none; display:inline-block; }
+  .btn-solid{ background:var(--ink); color:var(--paper); }
+  .btn-solid:hover{ background:var(--ink-2); }
+  .btn-ghost{ background:transparent; color:var(--ink); }
+  .btn-ghost:hover{ background:var(--paper-2); }
+
+  /* ---------- demo panel ---------- */
+  .panel{
+    background:var(--ink); color:var(--paper); border:1px solid var(--ink);
+    padding:24px; position:relative;
+  }
+  .panel-head{ display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#9AA6A0; margin-bottom:18px; }
+  .panel-head .dot{ width:7px; height:7px; background:var(--amber); display:inline-block; margin-right:6px; }
+  .readout{ font-size:12px; color:#8CA69B; }
+  .demo-region{ margin-bottom:18px; }
+  .demo-region label{ display:flex; justify-content:space-between; font-size:12px; color:#C6CFC9; margin-bottom:8px; }
+  input[type=range]{
+    width:100%; -webkit-appearance:none; height:2px; background:#2C3B36; outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:14px; height:14px; background:var(--amber); cursor:pointer; border-radius:50%;
+  }
+  input[type=range]::-moz-range-thumb{ width:14px; height:14px; background:var(--amber); cursor:pointer; border:none; border-radius:50%; }
+  .demo-rows{ border-top:1px solid #24322C; }
+  .demo-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 0; border-bottom:1px solid #24322C; font-size:13px;
+  }
+  .demo-row .name{ color:#EDEFEA; }
+  .demo-row .score{ color:var(--amber); font-weight:600; min-width:56px; text-align:right; }
+  .demo-foot{ margin-top:16px; font-size:11.5px; color:#7C8B84; line-height:1.5; }
+
+  /* ---------- section shell ---------- */
+  section{ padding:76px 0; border-top:1px solid var(--line); }
+  .section-head{ display:grid; grid-template-columns:220px 1fr; gap:32px; margin-bottom:40px; align-items:baseline; }
+  .section-num{ font-size:13px; color:var(--teal); }
+  h2{ font-size:clamp(24px,2.6vw,32px); margin:0 0 10px; font-weight:700; letter-spacing:-0.01em; }
+  .section-dek{ color:var(--grey); font-size:15.5px; max-width:56ch; }
+
+  /* ---------- pipeline (real sequence: numbered) ---------- */
+  .pipeline{ display:grid; grid-template-columns:repeat(5,1fr); gap:0; border:1px solid var(--line); }
+  .pipe-step{ padding:22px 18px; border-right:1px solid var(--line); }
+  .pipe-step:last-child{ border-right:none; }
+  .pipe-num{ font-size:12px; color:var(--amber-deep); margin-bottom:10px; }
+  .pipe-title{ font-weight:600; font-size:14.5px; margin-bottom:6px; }
+  .pipe-desc{ font-size:13px; color:var(--grey); }
+
+  /* ---------- modules: spec-sheet rows, not cards ---------- */
+  .modules{ border:1px solid var(--line); }
+  .module{ display:grid; grid-template-columns:260px 1fr; border-bottom:1px solid var(--line); }
+  .module:last-child{ border-bottom:none; }
+  .module-name{ padding:20px; background:var(--paper-2); font-weight:600; font-size:14.5px; border-right:1px solid var(--line); }
+  .module-desc{ padding:20px; font-size:14.5px; color:var(--ink-2); }
+  .module-desc .tag{ display:inline-block; font-size:11.5px; color:var(--teal); margin-top:8px; }
+
+  /* ---------- roadmap ---------- */
+  .roadmap{ border:1px solid var(--line); border-collapse:collapse; width:100%; font-size:14px; }
+  .roadmap th,.roadmap td{ text-align:left; padding:13px 16px; border-bottom:1px solid var(--line); }
+  .roadmap th{ background:var(--paper-2); font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; color:var(--grey); }
+  .roadmap tr:last-child td{ border-bottom:none; }
+  .badge{ font-size:11px; padding:3px 8px; border:1px solid; display:inline-block; }
+  .badge-live{ color:var(--teal); border-color:var(--teal); }
+  .badge-gated{ color:var(--grey); border-color:var(--line); }
+
+  /* ---------- services ---------- */
+  .services{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .service{ background:var(--paper); padding:22px; }
+  .service h3{ font-size:15px; margin:0 0 8px; }
+  .service p{ font-size:13.5px; color:var(--grey); margin:0; }
+
+  /* ---------- founder ---------- */
+  .founder{ display:grid; grid-template-columns:200px 1fr; gap:40px; align-items:start; }
+  .founder-mark{ width:100%; aspect-ratio:1; background:var(--ink); color:var(--amber); display:flex; align-items:center; justify-content:center; font-size:44px; }
+  .founder-name{ font-size:19px; font-weight:700; margin:0 0 4px; }
+  .founder-role{ font-size:13.5px; color:var(--teal); margin-bottom:16px; }
+  .founder-bio{ font-size:14.5px; color:var(--ink-2); max-width:64ch; }
+  .founder-bio p{ margin:0 0 12px; }
+
+  /* ---------- stats ---------- */
+  .stats{ display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line); }
+  .stat{ padding:24px 20px; border-right:1px solid var(--line); }
+  .stat:last-child{ border-right:none; }
+  .stat-num{ font-size:26px; font-weight:700; color:var(--amber-deep); }
+  .stat-label{ font-size:12.5px; color:var(--grey); margin-top:6px; }
+
+  /* ---------- contact ---------- */
+  .contact-grid{ display:grid; grid-template-columns:1fr 1fr; gap:56px; }
+  form{ display:flex; flex-direction:column; gap:14px; }
+  input:not([type=range]),textarea,select{
+    font-family:'Inter',sans-serif; font-size:14.5px; padding:12px 14px;
+    border:1px solid var(--line); background:var(--paper); color:var(--ink);
+  }
+  textarea{ min-height:110px; resize:vertical; }
+  label.form-label{ font-size:12.5px; color:var(--grey); margin-bottom:-8px; }
+  .ok-msg{ display:none; font-size:13.5px; color:var(--teal); padding:10px 0; }
+
+  /* ---------- affiliate ---------- */
+  .affiliate{ border:1px solid var(--line); padding:26px; display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap; }
+  .affiliate p{ margin:0; font-size:14px; color:var(--ink-2); max-width:56ch; }
+
+  footer{ border-top:1px solid var(--line); padding:34px 0; }
+  .foot-grid{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+  .foot-links{ display:flex; gap:20px; font-size:13px; }
+  .foot-links a{ text-decoration:none; color:var(--grey); }
+  .foot-links a:hover{ color:var(--ink); }
+  .foot-legal{ font-size:12px; color:var(--grey); }
+
+  /* ---------- chatbot ---------- */
+  #gj-launcher{
+    position:fixed; bottom:24px; right:24px; z-index:100;
+    background:var(--ink); color:var(--amber); border:1px solid var(--ink);
+    width:52px; height:52px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:20px;
+  }
+  #gj-panel{
+    position:fixed; bottom:88px; right:24px; z-index:100; width:340px; max-width:88vw;
+    background:var(--paper); border:1px solid var(--ink); display:none; flex-direction:column;
+  }
+  #gj-panel.open{ display:flex; }
+  #gj-panel .gp-head{ background:var(--ink); color:var(--paper); padding:12px 14px; font-size:13px; display:flex; justify-content:space-between; align-items:center; }
+  #gj-panel .gp-head button{ background:none; border:none; color:var(--paper); cursor:pointer; font-size:15px; }
+  #gj-log{ height:280px; overflow-y:auto; padding:14px; font-size:13.5px; display:flex; flex-direction:column; gap:10px; }
+  .msg{ max-width:88%; padding:9px 11px; }
+  .msg.bot{ background:var(--paper-2); align-self:flex-start; }
+  .msg.user{ background:var(--ink); color:var(--paper); align-self:flex-end; }
+  #gj-suggest{ display:flex; flex-wrap:wrap; gap:6px; padding:0 14px 10px; }
+  #gj-suggest button{ font-size:11.5px; border:1px solid var(--line); background:none; padding:6px 9px; cursor:pointer; }
+  #gj-form{ display:flex; border-top:1px solid var(--line); }
+  #gj-input{ flex:1; border:none; padding:11px; font-family:'Inter',sans-serif; font-size:13.5px; background:var(--paper); }
+  #gj-form button{ border:none; background:var(--ink); color:var(--amber); padding:0 16px; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:12px; }
+
+  @media (max-width:860px){
+    .hero-grid{ grid-template-columns:1fr; }
+    .section-head{ grid-template-columns:1fr; gap:8px; }
+    .pipeline{ grid-template-columns:1fr; }
+    .pipe-step{ border-right:none; border-bottom:1px solid var(--line); }
+    .pipe-step:last-child{ border-bottom:none; }
+    .module{ grid-template-columns:1fr; }
+    .module-name{ border-right:none; border-bottom:1px solid var(--line); }
+    .services{ grid-template-columns:1fr; }
+    .founder{ grid-template-columns:1fr; }
+    .founder-mark{ max-width:140px; }
+    .stats{ grid-template-columns:1fr 1fr; }
+    .stat{ border-bottom:1px solid var(--line); }
+    .contact-grid{ grid-template-columns:1fr; gap:36px; }
+  }
+  @media (prefers-reduced-motion:reduce){ *{ transition:none!important; animation:none!important; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand"><span class="nav-mark"></span>THE GEOJUSTICE PROJECT</div>
+  <div class="nav-links">
+    <a href="#platform">Platform</a>
+    <a href="#services">Advisory</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#founder">Team</a>
+    <a href="#contact" class="nav-cta">Talk to us</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="grid-bg"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">GEOSPATIAL DECISION SOFTWARE</div>
+      <h1 class="headline">Public land agencies make<br>equity decisions <span class="accent">on instinct.</span><br>We built the software that doesn't.</h1>
+      <p class="sub">The GeoJustice Project develops the GeoJustice Decision Platform — ArcGIS-native software that scores, ranks, and audits land and park decisions against real community need. First application: Parks &amp; Land. Pilots open 2027.</p>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn btn-solid">Request a pilot briefing</a>
+        <a href="#platform" class="btn btn-ghost">See the platform</a>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><span><span class="dot"></span>SCENARIO STUDIO — LIVE DEMO</span><span class="readout">36 sites · Atlanta pilot set</span></div>
+      <div class="demo-region">
+        <label><span>Equity weight</span><span id="wVal" class="readout">65%</span></label>
+        <input type="range" id="weight" min="0" max="100" value="65">
+      </div>
+      <div class="demo-rows" id="rows"></div>
+      <div class="demo-foot">Every re-rank is written to the Decision Ledger with the weighting used, timestamp, and inputs — nothing here is a black box.</div>
+    </div>
+  </div>
+</header>
+
+<section id="platform">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-num mono">01 / PLATFORM</div>
+      <div>
+        <h2>One engine. Five steps from raw parcel data to an auditable decision.</h2>
+        <p class="section-dek">The Decision Platform runs on ArcGIS Experience Builder, Pro, and Enterprise, with the scoring engine hosted on Azure and Google Cloud. This is the pipeline every site record moves through.</p>
+      </div>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-num mono">01</div>
+        <div class="pipe-title">Ingest</div>
+        <div class="pipe-desc">Parcel, census, and agency data pulled into a common schema.</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num mono">02</div>
+        <div class="pipe-title">Score</div>
+        <div class="pipe-desc">Need Engine and Suitability Score run against every site.</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num mono">03</div>
+        <div class="pipe-title">Rank</div>
+        <div class="pipe-desc">Sites ranked under a weighting your team controls and can see.</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num mono">04</div>
+        <div class="pipe-title">Decide</div>
+        <div class="pipe-desc">Staff selects, overrides, or defers — every action is logged.</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num mono">05</div>
+        <div class="pipe-title">Audit</div>
+        <div class="pipe-desc">The Decision Ledger produces the record for council, press, or funders.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-num mono">02 / MODULES</div>
+      <div>
+        <h2>What's actually inside the platform.</h2>
+        <p class="section-dek">Six modules, built specifically for public land and parks work — not a generic BI dashboard pointed at a shapefile.</p>
+      </div>
+    </div>
+
+    <div class="modules">
+      <div class="module">
+        <div class="module-name">Equity Need Engine</div>
+        <div class="module-desc">Produces the PROE Need Score from four weighted inputs — Physical Conditions, Level of Service, Community Need, Community Perceptions — plus a displacement-risk flag on every parcel.<span class="tag">EDT / PROE</span></div>
+      </div>
+      <div class="module">
+        <div class="module-name">Site Suitability Scoring</div>
+        <div class="module-desc">Park Suitability Score built on Network Analyst, Location-Allocation, and Suitability Modeler, aligned to TPL ParkScore methodology so results hold up against the national benchmark.</div>
+      </div>
+      <div class="module">
+        <div class="module-name">Land &amp; Forest Risk</div>
+        <div class="module-desc">Canopy loss, fire ecology exposure, and land-condition risk layered onto the same parcel record used for siting.</div>
+      </div>
+      <div class="module">
+        <div class="module-name">Scenario Studio</div>
+        <div class="module-desc">The live re-ranking tool in the hero panel above — adjust weighting, compare outcomes, before a decision is final.</div>
+      </div>
+      <div class="module">
+        <div class="module-name">Decision Ledger</div>
+        <div class="module-desc">An immutable audit trail: what was scored, who decided, when, and under what weighting. Built for public accountability, not just internal use.</div>
+      </div>
+      <div class="module">
+        <div class="module-name">Reporting &amp; StoryMaps</div>
+        <div class="module-desc">Council-ready and funder-ready output generated directly from platform data — no manual rebuild in a separate deck.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="roadmap">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-num mono">03 / ROADMAP</div>
+      <div>
+        <h2>Parks first. Everything else is gated.</h2>
+        <p class="section-dek">The same engine generalizes to other equity-critical land decisions. We are deliberately not building those yet — each unlocks after Parks &amp; Land proves out with paying customers.</p>
+      </div>
+    </div>
+
+    <table class="roadmap">
+      <tr><th>Application</th><th>Status</th><th>Unlock condition</th></tr>
+      <tr><td>Parks &amp; Land</td><td><span class="badge badge-live">In development</span></td><td>Pilots open 2027</td></tr>
+      <tr><td>Housing &amp; anti-displacement</td><td><span class="badge badge-gated">Gated</span></td><td>3 paying Parks &amp; Land customers, stable model version</td></tr>
+      <tr><td>Heat island mitigation</td><td><span class="badge badge-gated">Gated</span></td><td>Follows housing application</td></tr>
+      <tr><td>Food access</td><td><span class="badge badge-gated">Gated</span></td><td>Roadmap, unscoped</td></tr>
+      <tr><td>NG911 / addressing</td><td><span class="badge badge-gated">Gated</span></td><td>Roadmap, unscoped</td></tr>
+      <tr><td>Environmental justice screening</td><td><span class="badge badge-gated">Gated</span></td><td>Roadmap, unscoped</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="services">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-num mono">04 / ADVISORY</div>
+      <div>
+        <h2>We also help you get the data ready to run on it.</h2>
+        <p class="section-dek">Advisory work exists to get agencies platform-ready — it's how we fund the roadmap, not a separate business.</p>
+      </div>
+    </div>
+
+    <div class="services">
+      <div class="service"><h3>Geospatial strategy</h3><p>Enterprise GIS roadmaps and governance frameworks for agencies standing up a program.</p></div>
+      <div class="service"><h3>Spatial equity assessment</h3><p>Independent Need Score analysis for agencies not yet running the platform.</p></div>
+      <div class="service"><h3>Suitability &amp; acquisition analysis</h3><p>Site-by-site scoring for a specific acquisition or capital decision.</p></div>
+      <div class="service"><h3>Data governance &amp; ArcGIS admin</h3><p>AGOL/Enterprise administration, layer registry, and QA/QC — the groundwork the platform needs.</p></div>
+      <div class="service"><h3>Field data collection</h3><p>GPS/GNSS, drone, Survey123, and Field Maps deployment to fill data gaps.</p></div>
+      <div class="service"><h3>Training &amp; capacity building</h3><p>Get your own staff running the platform without depending on us to operate it.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="founder">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-num mono">05 / TEAM</div>
+      <div><h2>Built by someone who's held the budget.</h2></div>
+    </div>
+
+    <div class="founder">
+      <div class="founder-mark">L</div>
+      <div>
+        <div class="founder-name">Legend</div>
+        <div class="founder-role">Founder &amp; Principal</div>
+        <div class="founder-bio">
+          <p>First GIS Manager for the City of Atlanta Department of Parks and Recreation, and author of Atlanta's first Geospatial Strategy. Twenty-plus years across federal, state, county, and city government and private industry, with more than 22 million acres of land managed across the diaspora.</p>
+          <p>Holds three degrees including an M.S. in Rural Sociology from Auburn University, teaches GIS at Morehouse College, is pursuing a Georgia Registered Forester credential, and is a contributing author to The 1526 Project.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats" style="margin-top:44px;">
+      <div class="stat"><div class="stat-num">22M+</div><div class="stat-label">Acres managed across the diaspora</div></div>
+      <div class="stat"><div class="stat-num">20+</div><div class="stat-label">Years across gov &amp; private sector</div></div>
+      <div class="stat"><div class="stat-num">36</div><div class="stat-label">Sites in the Atlanta pilot set</div></div>
+      <div class="stat"><div class="stat-num">2027</div><div class="stat-label">Pilot cohort opens</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="affiliate">
+      <p><strong>The GeoJustice Institute</strong> is our nonprofit affiliate, teaching GIS to youth and communities under a separate motto: "Mapping Equity Matters." The Project builds the software; the Institute builds who can use it.</p>
+      <a href="../institute/index.html" class="btn btn-ghost">Visit the Institute →</a>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-num mono">06 / CONTACT</div>
+      <div><h2>Talk to us about a pilot or an engagement.</h2></div>
+    </div>
+
+    <div class="contact-grid">
+      <div>
+        <p class="section-dek" style="margin-bottom:20px;">Tell us what you're deciding on — a park acquisition, a capital plan, a data governance problem — and whether you're asking about the platform or advisory work. We reply within two business days.</p>
+        <div id="ok" class="ok-msg">Thanks — message received. We'll reply within two business days.</div>
+        <form id="cform" name="contact" method="POST" data-netlify="true">
+          <input type="hidden" name="form-name" value="contact">
+          <label class="form-label">Name</label>
+          <input type="text" name="name" required>
+          <label class="form-label">Email</label>
+          <input type="email" name="email" required>
+          <label class="form-label">Organization</label>
+          <input type="text" name="org">
+          <label class="form-label">Interested in</label>
+          <select name="interest">
+            <option>Decision Platform pilot</option>
+            <option>Advisory / consulting</option>
+            <option>Both</option>
+            <option>Something else</option>
+          </select>
+          <label class="form-label">Message</label>
+          <textarea name="message" required></textarea>
+          <button type="submit" class="btn btn-solid" style="align-self:flex-start;">Send</button>
+        </form>
+      </div>
+      <div class="panel" style="background:var(--paper-2); color:var(--ink); border-color:var(--line);">
+        <div class="panel-head" style="color:var(--grey);"><span><span class="dot"></span>ASK GEOJUSTICE</span></div>
+        <p style="font-size:13.5px; color:var(--ink-2);">Quick questions about the platform, roadmap, or advisory services — the assistant in the corner (bottom right) can answer those without a form. It won't invent pricing or dates it doesn't have.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div class="foot-legal">© 2026 The GeoJustice Project. Equity Software Matters.</div>
+    <div class="foot-links">
+      <a href="#platform">Platform</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="../institute/index.html">The Institute</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<div id="gj-launcher" aria-label="Open assistant">◆</div>
+<div id="gj-panel">
+  <div class="gp-head"><span>Ask GeoJustice</span><button id="gj-close">✕</button></div>
+  <div id="gj-log"></div>
+  <div id="gj-suggest">
+    <button data-q="What is the Decision Platform?">What's the platform?</button>
+    <button data-q="When do pilots open?">Pilot timeline?</button>
+    <button data-q="What's on the roadmap after parks?">What's next after parks?</button>
+  </div>
+  <form id="gj-form">
+    <input id="gj-input" type="text" placeholder="Ask a question..." autocomplete="off">
+    <button type="submit">SEND</button>
+  </form>
+</div>
+
+<script>
+/* ---------- Scenario Studio demo ---------- */
+const SITES = [
+  {name:"Pittsburgh Yards Site", need:0.91, suit:0.58},
+  {name:"Vine City Green Link", need:0.86, suit:0.71},
+  {name:"Peoplestown Infill", need:0.79, suit:0.66},
+  {name:"Buckhead Trail Spur", need:0.22, suit:0.94},
+  {name:"English Ave Corner Lot", need:0.88, suit:0.49},
+  {name:"Adair Park Extension", need:0.74, suit:0.77},
+];
+const rowsEl = document.getElementById('rows');
+const weightEl = document.getElementById('weight');
+const wVal = document.getElementById('wVal');
+
+function render(){
+  const eq = weightEl.value/100;
+  wVal.textContent = Math.round(eq*100)+'%';
+  const scored = SITES.map(s => ({...s, score: eq*s.need + (1-eq)*s.suit}))
+    .sort((a,b)=>b.score-a.score).slice(0,4);
+  rowsEl.innerHTML = scored.map(s=>`<div class="demo-row"><span class="name">${s.name}</span><span class="score">${(s.score*100).toFixed(0)}</span></div>`).join('');
+}
+weightEl.addEventListener('input', render);
+render();
+
+/* ---------- contact form (static preview) ---------- */
+document.getElementById('cform').addEventListener('submit', function(e){
+  if(location.hostname==='localhost' || location.protocol==='file:' || location.hostname.includes('claude')){
+    e.preventDefault();
+    document.getElementById('ok').style.display='block';
+    this.reset();
+  }
+});
+
+/* ---------- Ask GeoJustice: canned FAQ assistant ---------- */
+(function(){
+  const FAQ = [
+    { k:['platform','decision platform','what is','software'], a:"The GeoJustice Decision Platform is ArcGIS-native software that scores, ranks, and audits land and park decisions against community need. First application is Parks & Land." },
+    { k:['pilot','when','timeline','2027'], a:"Pilots open in 2027. The Atlanta pilot set currently covers 36 sites used to validate the scoring engine." },
+    { k:['roadmap','next','after parks','housing','future'], a:"After Parks & Land, the roadmap includes housing & anti-displacement, heat island mitigation, food access, NG911/addressing, and environmental justice screening — each gated until we have 3 paying Parks & Land customers." },
+    { k:['price','pricing','cost','fee'], a:"We don't publish pricing here — use the contact form and we'll follow up with details specific to your agency and scope." },
+    { k:['founder','who','legend','team'], a:"The Project was founded by Legend, the first GIS Manager for the City of Atlanta Department of Parks and Recreation and author of Atlanta's first Geospatial Strategy." },
+    { k:['institute','nonprofit','education'], a:"The GeoJustice Institute is our nonprofit affiliate — it teaches GIS to youth and communities under the motto 'Mapping Equity Matters.' Its site is linked in the footer." },
+    { k:['advisory','consulting','services'], a:"We offer geospatial strategy, spatial equity assessment, suitability & acquisition analysis, data governance, field data collection, and training — mainly to get agencies platform-ready." },
+  ];
+  function reply(q){
+    const s = q.toLowerCase();
+    const hit = FAQ.find(f => f.k.some(k => s.includes(k)));
+    return hit ? hit.a : "Good question — that's specific enough that I'd rather have a person answer it. Use the contact form and we'll reply within two business days.";
+  }
+  const log = document.getElementById('gj-log');
+  function push(text, who){
+    const d = document.createElement('div');
+    d.className = 'msg '+who;
+    d.textContent = text;
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+  }
+  push("Hi — ask me about the platform, roadmap, or advisory services.", 'bot');
+
+  document.getElementById('gj-launcher').addEventListener('click', ()=>{
+    document.getElementById('gj-panel').classList.toggle('open');
+  });
+  document.getElementById('gj-close').addEventListener('click', ()=>{
+    document.getElementById('gj-panel').classList.remove('open');
+  });
+  document.querySelectorAll('#gj-suggest button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const q = b.dataset.q;
+      push(q, 'user');
+      setTimeout(()=>push(reply(q), 'bot'), 250);
+    });
+  });
+  document.getElementById('gj-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    const input = document.getElementById('gj-input');
+    const q = input.value.trim();
+    if(!q) return;
+    push(q, 'user');
+    input.value='';
+    setTimeout(()=>push(reply(q), 'bot'), 250);
+  });
+})();
+</script>
+</body>
+</html>
