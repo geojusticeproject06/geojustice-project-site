@@ -155,6 +155,32 @@
     .involve{ grid-template-columns:1fr; }
     .contact-grid{ grid-template-columns:1fr; gap:36px; }
   }
+  /* ---------- chatbot ---------- */
+  #gi-launcher{
+    position:fixed; bottom:24px; right:24px; z-index:100;
+    background:var(--green); color:var(--paper); border:1px solid var(--green);
+    width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:20px; font-family:'Spectral',serif;
+  }
+  #gi-panel{
+    position:fixed; bottom:88px; right:24px; z-index:100; width:340px; max-width:88vw;
+    background:var(--paper); border:1px solid var(--line); display:none; flex-direction:column;
+    box-shadow:0 8px 28px rgba(23,20,15,0.18);
+  }
+  #gi-panel.open{ display:flex; }
+  #gi-panel .gp-head{ background:var(--green); color:var(--paper); padding:12px 14px; font-size:14px; font-family:'Spectral',serif; display:flex; justify-content:space-between; align-items:center; }
+  #gi-panel .gp-head button{ background:none; border:none; color:var(--paper); cursor:pointer; font-size:15px; }
+  #gi-log{ height:280px; overflow-y:auto; padding:14px; font-size:13.5px; display:flex; flex-direction:column; gap:10px; }
+  .gi-msg{ max-width:88%; padding:9px 11px; }
+  .gi-msg.bot{ background:var(--paper-2); align-self:flex-start; }
+  .gi-msg.user{ background:var(--green); color:var(--paper); align-self:flex-end; }
+  #gi-suggest{ display:flex; flex-wrap:wrap; gap:6px; padding:0 14px 10px; }
+  #gi-suggest button{ font-size:11.5px; border:1px solid var(--line); background:none; color:var(--ink-soft); padding:6px 9px; cursor:pointer; font-family:'Public Sans',sans-serif; }
+  #gi-suggest button:hover{ border-color:var(--gold); color:var(--ink); }
+  #gi-form{ display:flex; border-top:1px solid var(--line); }
+  #gi-input{ flex:1; border:none; padding:11px; font-family:'Public Sans',sans-serif; font-size:13.5px; background:var(--paper); color:var(--ink); }
+  #gi-form button{ border:none; background:var(--green); color:var(--paper); padding:0 16px; cursor:pointer; font-family:'Public Sans',sans-serif; font-weight:600; font-size:12.5px; }
+
   @media (prefers-reduced-motion:reduce){ *{ transition:none!important; animation:none!important; } }
 </style>
 </head>
@@ -394,6 +420,21 @@
   </div>
 </footer>
 
+<div id="gi-launcher" aria-label="Open assistant">&#9670;</div>
+<div id="gi-panel">
+  <div class="gp-head"><span>Ask the Institute</span><button id="gi-close">&#10005;</button></div>
+  <div id="gi-log"></div>
+  <div id="gi-suggest">
+    <button data-q="What is the Skyway Tech Program?">Skyway Tech Program?</button>
+    <button data-q="How can I get involved?">Get involved?</button>
+    <button data-q="Are you a nonprofit?">Are you a nonprofit?</button>
+  </div>
+  <form id="gi-form">
+    <input id="gi-input" type="text" placeholder="Ask a question..." autocomplete="off">
+    <button type="submit">SEND</button>
+  </form>
+</div>
+
 <script>
 document.getElementById('cform').addEventListener('submit', function(e){
   if(location.hostname==='localhost' || location.protocol==='file:' || location.hostname.includes('claude')){
@@ -402,6 +443,57 @@ document.getElementById('cform').addEventListener('submit', function(e){
     this.reset();
   }
 });
+
+/* ---------- Ask the Institute: canned FAQ assistant ---------- */
+(function(){
+  const FAQ = [
+    { k:['skyway','flagship','recreation center'], a:"The Skyway Tech Program is our flagship — students at the Skyway Recreation Center in Atlanta learn ArcGIS fundamentals by mapping their own blocks, parks, and infrastructure gaps, then presenting findings back to their community." },
+    { k:['program','workshop','teach','school','district','organization training','class'], a:"We run community GIS workshops, school & district partnerships, and organization training — all built on the model we developed at Skyway." },
+    { k:['involve','donate','volunteer','partner','support','give'], a:"Three ways in: Donate to fund a seat in the Skyway Tech Program, Volunteer your time, or Partner your school/organization with us. Use the contact form below to tell us which." },
+    { k:['nonprofit','501','tax','legal'], a:"Yes — The GeoJustice Institute is an independent 501(c)(3) nonprofit, the education affiliate of The GeoJustice Project." },
+    { k:['age','who do you serve','youth','students'], a:"We serve youth ages 12–24, plus communities and organizations, teaching GIS so the people most affected by land decisions can read, question, and shape them." },
+    { k:['international','andros','bahamas','portfolio'], a:"Alongside our Atlanta education programs, The GeoJustice Project's analytical work extends internationally — for example a nine-year land cover and forest-change baseline for Andros Island, Bahamas." },
+    { k:['project','geojustice project','software','decision platform'], a:"The GeoJustice Project is our for-profit affiliate — they build the GeoJustice Decision Platform under the motto 'Software Equity Matters.' We teach the people who will one day use tools like it." },
+    { k:['contact','reach','email','sign up'], a:"Use the contact form below and tell us how you'd like to get involved — we'll follow up within two business days." },
+  ];
+  function reply(q){
+    const s = q.toLowerCase();
+    const hit = FAQ.find(f => f.k.some(k => s.includes(k)));
+    return hit ? hit.a : "Good question — that's specific enough that I'd rather have a person answer it. Use the contact form below and we'll reply within two business days.";
+  }
+  const log = document.getElementById('gi-log');
+  function push(text, who){
+    const d = document.createElement('div');
+    d.className = 'gi-msg '+who;
+    d.textContent = text;
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+  }
+  push("Hi — ask me about our programs, how to get involved, or the Institute itself.", 'bot');
+
+  document.getElementById('gi-launcher').addEventListener('click', ()=>{
+    document.getElementById('gi-panel').classList.toggle('open');
+  });
+  document.getElementById('gi-close').addEventListener('click', ()=>{
+    document.getElementById('gi-panel').classList.remove('open');
+  });
+  document.querySelectorAll('#gi-suggest button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const q = b.dataset.q;
+      push(q, 'user');
+      setTimeout(()=>push(reply(q), 'bot'), 250);
+    });
+  });
+  document.getElementById('gi-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    const input = document.getElementById('gi-input');
+    const q = input.value.trim();
+    if(!q) return;
+    push(q, 'user');
+    input.value = '';
+    setTimeout(()=>push(reply(q), 'bot'), 250);
+  });
+})();
 </script>
 </body>
 </html>
